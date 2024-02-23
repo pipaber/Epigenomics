@@ -29,7 +29,7 @@ citation:
 number-sections: true
 ---
 
-## Methylation analysis
+## Methylation Analysis
 
 ### Methylation
 
