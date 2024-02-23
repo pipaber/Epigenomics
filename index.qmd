@@ -63,13 +63,13 @@ To see how to analyze at a multi-resolution level from a Illumina 450k array wit
 
 {{< embed notebooks/Methylation_multiresolution_analysis.qmd#Island-status echo=true >}}
 
-## Methyl-Seq
+### Methyl-Seq
 
 Analyzing bisulfite sequencing data requires a server or an HPC. U can use the *methylseq* pipeline from [nfcore](https://nf-co.re/methylseq/2.6.0) to get the .cov files to proced with the downstream analysis on R.
 
 To see how to analyze Whole-genome bisulfite sequencing (WGBS) with the [@bsseq], click on the script below the image.
 
-### WGBS
+#### WGBS
 
 ![Methylation DMR](notebooks/track_methyl_seq_plot.png){width="523"}
 
