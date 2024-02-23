@@ -74,8 +74,8 @@ To see how to analyze Whole-genome bisulfite sequencing (WGBS) with the [@bsseq]
 
 #### WGBS
 
+![Methylation DMR](notebooks/track_methyl_seq_plot.png){width="523"}
 
-{{< embed notebooks/Methyl_Seq.qmd#fig-dmr >}}
 
 ## References {.unnumbered}
 
