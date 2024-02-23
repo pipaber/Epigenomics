@@ -11,3 +11,4 @@ format:
     smooth-scroll: true
     comments:
       hypothesis: true
+theme: minty
