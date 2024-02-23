@@ -12,5 +12,6 @@ format:
     smooth-scroll: true
     comments:
       hypothesis: true
-    toc-location: right
+    grid: 
+      body-width: 900px
 theme: minty
