@@ -228,7 +228,7 @@
        <section id="loading-data" class="level2">
 <h2 class="anchored" data-anchor-id="loading-data">Loading data</h2>
 <div class="cell-container code-fold"><div class="cell-decorator"><pre>In [1]:</pre></div><div class="cell">
-<details class="code-fold">
+<details open="" class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(minfi)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
@@ -411,7 +411,7 @@ Attaching package: 'Biostrings'</code></pre>
 <div class="cell-output cell-output-stderr">
 <pre><code>Setting options('GEOquery.inmemory.gpl'=FALSE)</code></pre>
 </div>
-<details class="code-fold">
+<details open="" class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(IlluminaHumanMethylation450kmanifest)</span>
 <span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(IlluminaHumanMethylation450kanno.ilmn12.hg19)</span>
@@ -460,7 +460,7 @@ Attaching package: 'Biostrings'</code></pre>
 ✖ purrr::when()         masks foreach::when()
 ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
 </div>
-<details class="code-fold">
+<details open="" class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(TxDb.Hsapiens.UCSC.hg19.knownGene)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
@@ -484,7 +484,7 @@ The following object is masked from 'package:dplyr':
 
     select</code></pre>
 </div>
-<details class="code-fold">
+<details open="" class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(Gviz)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
@@ -525,7 +525,7 @@ The following object is masked from 'package:Biostrings':
 <section id="multi-resolution-analysis" class="level2">
 <h2 class="anchored" data-anchor-id="multi-resolution-analysis">Multi-resolution analysis</h2>
 <div class="cell-container code-fold"><div class="cell-decorator"><pre>In [2]:</pre></div><div class="cell">
-<details class="code-fold">
+<details open="" class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb63"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="at">file =</span> <span class="st">"450karray_processed_multiresolution2.rds"</span>)</span>
 <span id="cb63-2"><a href="#cb63-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -533,7 +533,7 @@ The following object is masked from 'package:Biostrings':
 </details>
 </div></div>
 <div class="cell-container code-fold"><div class="cell-decorator"><pre>In [3]:</pre></div><div class="cell">
-<details class="code-fold">
+<details open="" class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb64"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb64-2"><a href="#cb64-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mcols</span>(<span class="fu">granges</span>(dat<span class="sc">$</span>object))<span class="sc">$</span>type <span class="sc">|&gt;</span> </span>
@@ -1018,7 +1018,7 @@ The following object is masked from 'package:Biostrings':
 </div>
 </div></div>
 <div class="cell-container code-fold"><div class="cell-decorator"><pre>In [4]:</pre></div><div class="cell">
-<details class="code-fold">
+<details open="" class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a>cancer_status <span class="ot">&lt;-</span> <span class="fu">factor</span>(<span class="fu">pData</span>(dat<span class="sc">$</span>object)<span class="sc">$</span>Status,</span>
 <span id="cb65-2"><a href="#cb65-2" aria-hidden="true" tabindex="-1"></a>                        <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"normal"</span>,<span class="st">"cancer"</span>))</span>
@@ -1047,7 +1047,7 @@ The following object is masked from 'package:Biostrings':
 </div>
 </div></div>
 <div class="cell-container code-fold"><div class="cell-decorator"><pre>In [5]:</pre></div><div class="cell">
-<details class="code-fold">
+<details open="" class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb72"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a>tab<span class="ot">=</span><span class="fu">makeGRangesFromDataFrame</span>(res<span class="sc">$</span>table, <span class="at">keep.extra.columns =</span> T)</span>
 <span id="cb72-2"><a href="#cb72-2" aria-hidden="true" tabindex="-1"></a>index<span class="ot">=</span> <span class="fu">granges</span>(dat<span class="sc">$</span>obj)<span class="sc">%over%</span> (tab[<span class="dv">1</span>]<span class="sc">+</span><span class="dv">10000</span>)</span>
@@ -1062,7 +1062,7 @@ The following object is masked from 'package:Biostrings':
 </figure>
 </div>
 </div>
-<details class="code-fold">
+<details open="" class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb73"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a><span class="do">##and these are the estimated difference</span></span>
 <span id="cb73-2"><a href="#cb73-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(pos,res<span class="sc">$</span>fitted[index])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -1079,7 +1079,7 @@ The following object is masked from 'package:Biostrings':
 <section id="plotting" class="level2">
 <h2 class="anchored" data-anchor-id="plotting">Plotting</h2>
 <div class="cell-container code-fold"><div class="cell-decorator"><pre>In [6]:</pre></div><div class="cell">
-<details class="code-fold">
+<details open="" class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb74"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a>genome <span class="ot">&lt;-</span> <span class="st">"hg19"</span></span>
 <span id="cb74-2"><a href="#cb74-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -1166,7 +1166,7 @@ The following object is masked from 'package:Biostrings':
 </details>
 </div></div>
 <div class="cell-container code-fold"><div class="cell-decorator"><pre>In [7]:</pre></div><div class="cell">
-<details class="code-fold">
+<details open="" class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb75"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a><span class="fu">png</span>(<span class="at">file=</span><span class="st">"track_plot.png"</span>, <span class="at">width =</span> <span class="dv">1200</span>, <span class="at">height =</span> <span class="dv">550</span>)</span>
 <span id="cb75-2"><a href="#cb75-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plotTracks</span>(tracks, </span>
@@ -1577,7 +1577,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }
   }
 });
-</script>  </div> <!-- /content -->  <script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","loop":false,"openEffect":"zoom","selector":".lightbox","descPosition":"bottom"});
+</script>  </div> <!-- /content -->  <script>var lightboxQuarto = GLightbox({"descPosition":"bottom","openEffect":"zoom","closeEffect":"zoom","loop":false,"selector":".lightbox"});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;
