@@ -1,4 +1,4 @@
-## A Quarto Manuscript Template
+## Epigenomics Data Analysis
 
-This is a template repo for generating a manuscript from Quarto that accompanies the tutorial at: [Quarto Manuscripts: RStudio](https://quarto.org/docs/manuscripts/authoring/rstudio.html)
+This is a bioinformatics repo that serves as a portfolio to showcase the analysis of epigenomics data.
 
