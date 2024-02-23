@@ -11,4 +11,5 @@ format:
     smooth-scroll: true
     comments:
       hypothesis: true
+    toc-location: right
 theme: minty
