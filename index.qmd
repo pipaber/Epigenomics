@@ -49,6 +49,20 @@ The cytosine's (C) that are methylated are followed by a guanine (G). This patte
 
 If a C is methylated the bisulfite treatment won´t change the cytosine but, if the C is not methylated, the C will suffer a transition to a T.
 
+## Methyl-Seq
+
+Analyzing bisulfite sequencing data requires a server or an HPC. U can use the *methylseq* pipeline from [nfcore](https://nf-co.re/methylseq/2.6.0) to get the .cov files to proceed with the downstream analysis on R.
+
+To see how to analyze Whole-genome bisulfite sequencing (WGBS) with the [@bsseq], click on the script below the image.
+
+#### WGBS
+
+![Methylation DMR](notebooks/track_methyl_seq_plot.png){width="523"}
+
+{{< embed notebooks/Methyl_Seq.qmd#fig-dmr >}}
+
+
+## Illumina 450k array
 
 ### Methylation 450k array
 
@@ -64,19 +78,6 @@ To see how to analyze at a multi-resolution level from a Illumina 450k array wit
 ![Methylation DMR](notebooks/track_plot.png)
 
 {{< embed notebooks/Methylation_multiresolution_analysis.qmd#Island-status echo=true >}}
-
-
-### Methyl-Seq
-
-Analyzing bisulfite sequencing data requires a server or an HPC. U can use the *methylseq* pipeline from [nfcore](https://nf-co.re/methylseq/2.6.0) to get the .cov files to proceed with the downstream analysis on R.
-
-To see how to analyze Whole-genome bisulfite sequencing (WGBS) with the [@bsseq], click on the script below the image.
-
-#### WGBS
-
-![Methylation DMR](notebooks/track_methyl_seq_plot.png){width="523"}
-
-{{< embed notebooks/Methyl_Seq.qmd#fig-dmr >}}
 
 
 
