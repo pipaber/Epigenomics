@@ -49,11 +49,13 @@ The cytosine's (C) that are methylated are followed by a guanine (G). This patte
 
 If a C is methylated the bisulfite treatment won´t change the cytosine but, if the C is not methylated, the C will suffer a transition to a T.
 
+
 ### Methylation 450k array
 
 To see how to analyze from a Illumina 450k array with the [@minfi] package, click to the script below the image.
 
 {{< embed notebooks/Methylation_analysis.qmd#fig-meth >}}
+
 
 ### Methylation 450k array - Multi-resolution Analysis
 
@@ -62,6 +64,7 @@ To see how to analyze at a multi-resolution level from a Illumina 450k array wit
 ![Methylation DMR](notebooks/track_plot.png)
 
 {{< embed notebooks/Methylation_multiresolution_analysis.qmd#Island-status echo=true >}}
+
 
 ### Methyl-Seq
 

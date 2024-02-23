@@ -7,5 +7,7 @@ execute:
 format:
   html:
     toc: true
+    code-fold: true
+    smooth-scroll: true
     comments:
       hypothesis: true
