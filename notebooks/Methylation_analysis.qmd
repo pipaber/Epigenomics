@@ -1,0 +1,202 @@
+---
+title: "DNA methylation measurement"
+author: "Piero Palacios Bernuy"
+format: html
+editor: visual
+---
+
+## Data Analysis and Integration
+
+### General Idea for Inference for DNA Methylation
+
+The functional model:
+
+$$
+Y_{ij} = \beta_{O}(l_{j}) + X_{i}*\beta_{1}(l_j) + \epsilon_{ij}
+$$
+
+$X_{i}$ can be a continuous variable like age or weight.
+
+The analysis is modularized:
+
+-   First estimate the betas for every location.
+-   Then we make an analysis on those betas.
+-   Then we need to identify possible differentially methylated regions (bumps), e.g. using a threshold.
+-   We can summarise this bumps using the area or some similar measure.
+-   Another summary is to keep the length of the bump and the height.
+
+```{r}
+library(minfi)
+library(IlluminaHumanMethylation450kmanifest)
+library(IlluminaHumanMethylation450kanno.ilmn12.hg19)
+library(tidyverse)
+```
+
+```{r}
+targets <- read.csv("targets.txt", sep = "\t")
+```
+
+``` r
+
+# This code is not executed due to limit size (50 mb) of github
+# Please load the 450karrar_processed.rds data that is the resulto of this code
+# If you want to do this with the original data, you can find this data on: 
+# https://github.com/genomicsclass/tcgaMethylationSubset
+
+
+targets$Basename <- paste0(getwd(),"/notebooks/", targets$Basename)
+
+dat <- read.metharray(targets$Basename, verbose = T)
+
+pData(dat) <- as(targets, "DataFrame")
+
+## preprocessing
+
+dat <- preprocessIllumina(dat)
+dat <- mapToGenome(dat)
+dat <- ratioConvert(dat, type="Ilumina")
+
+
+index_tissue = which(pData(dat)$Tissue != "breast")
+dat <- dat[,index_tissue]
+
+index_chr = which(seqnames(dat)=="chr22")
+
+dat <- dat[index_chr,]
+```
+
+```{r}
+
+dat <- readRDS(file = "450karray_processed.rds")
+
+X <- model.matrix(~pData(dat)$Tissue)
+
+library(doParallel)
+detectCores()
+registerDoParallel(cores=8)
+
+
+res <- minfi::bumphunter(dat, X, cutoff=0.1, B=1000)
+
+```
+
+### CpG Island Shores
+
+```{r}
+
+library(AnnotationHub)
+ah <- AnnotationHub()
+cgi_id <- "AH5086"
+
+cgi <- ah[[cgi_id]]
+
+```
+
+```{r}
+
+# remember that this is only the chromosome 22
+
+tab <- res$table[res$table$fwer <= 0.05, ]
+tab <- makeGRangesFromDataFrame(tab, keep.extra.columns = TRUE)
+
+tab
+```
+
+```{r}
+map = distanceToNearest(tab, cgi)
+
+distances <- mcols(map)$distance
+
+cut(distances, c(0,1,2000,5000,Inf), include.lowest = TRUE, right = F) |> 
+    table() |> 
+    prop.table()
+
+```
+
+With matplot:
+
+```{r}
+
+tab <- tab[order(mcols(tab)$area, decreasing = T)]
+
+tab <- tab+3000
+
+i = 1
+
+data_index <- which(granges(dat) %over% tab[i,])
+cgi_index <- which(cgi %over% tab[i,])
+the_cgi <- cgi[cgi_index]
+
+
+pos <- start(dat)[data_index]
+xlim <- range(c(pos, start(the_cgi), end(the_cgi)))
+
+beta <- getBeta(dat)
+y <- beta[data_index,]
+
+cols <- as.factor(pData(dat)$Tissue)
+library(rafalib)
+
+matplot(pos,y, col=as.numeric(cols), xlim=xlim, ylim = c(0,1),
+        ylab="Methylation",xlab="Genomic position")
+
+# apply(cbind(start(the_cgi), end(the_cgi)),1,FUN = function(x){
+#     segments(x[1],0,x[2],0,lwd=5, col=3)
+# })
+
+```
+
+With ggplot2
+
+```{r}
+#| label: fig-meth
+
+dd <- pData(dat) |> 
+  as.data.frame() |> 
+  as_tibble() |> 
+  dplyr::select(Sex,Tissue,Status,bcr_sample_barcode)
+
+d <- y |> 
+  as.data.frame() |> 
+  as_tibble() |> 
+  mutate(CpGs = rownames(y))
+
+colnames(d)[1:(length(colnames(d))-1)] <- dd$bcr_sample_barcode
+
+d <- d |> 
+  pivot_longer(cols = colnames(d)[1:(length(colnames(d))-1)], names_to = "sample_names", values_to = "methylation_values")
+
+d <- d |> 
+  left_join(dd, by = join_by(sample_names == bcr_sample_barcode))
+
+pos <- granges(dat) |> 
+  as.data.frame() 
+
+pos2 <- pos |> 
+  as_tibble() |> 
+  mutate(CpGs = rownames(pos)) |> 
+  dplyr::select(start, CpGs)
+
+d <- d |> 
+  left_join(pos2, by = join_by(CpGs))
+
+p1 <- d |> 
+  ggplot(aes(start, methylation_values, colour=Tissue)) + 
+  geom_point() +
+  facet_wrap(~Status) +
+  theme_minimal() +
+  labs(x = "Position", y="Methylation Value") +
+  paletteer::scale_color_paletteer_d("awtools::a_palette")
+
+p1
+```
+
+```{r}
+
+plot(pos, res$fitted[data_index], xlim=xlim, ylim=c(-0.4,0.4))
+abline(h=0)
+# apply(cbind(start(the_cgi), end(the_cgi)),1, function(x){
+#     segments(x[1],0,x[2],0,lwd=5, col=3)
+# })
+
+```

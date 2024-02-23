@@ -1,0 +1,272 @@
+---
+title: "DNA methylation measurement by sequencing"
+subtitle: "Methyl-Seq"
+author: "Piero Palacios Bernuy"
+format: html
+editor: visual
+---
+
+# Whole-genome bisulfite sequencing (WGBS)
+
+```{r}
+library(bsseq)
+
+```
+
+The metadata loaded below can be downloaded from SRA from NCBI or from GEO (GSE46644).
+
+```{r}
+targets <- read.table(file.path("targets2.txt"),header = T, sep = "\t")
+
+targets <- DataFrame(targets, row.names = as.character(targets$Run))
+```
+
+``` r
+
+# This code is not executed due to limit size (50 mb) of github
+# Please load the 450karrar_processed.rds data that is the resulto of this code
+# If you want to do this with the original data, you can find this data on: 
+# https://github.com/genomicsclass/colonCancerWGBS
+
+path <- paste0(getwd(),"/colonCancerWGBS-master")
+
+targets <- read.table(file.path(path,"targets2.txt"),header = T, sep = "\t")
+
+targets <- DataFrame(targets, row.names = as.character(targets$Run))
+
+covfiles <- file.path(path, paste0(rownames(targets), ".chr22.cov"))
+
+colonCancerWGBS <- read.bismark(files = covfiles, rmZeroCov = TRUE,
+                                colData = targets)
+```
+
+```{r}
+colonCancerWGBS <- readRDS("methyl_seq.rds")
+```
+
+```{r}
+cov <- getCoverage(colonCancerWGBS,type = "Cov")
+m <- getCoverage(colonCancerWGBS,type = "M")
+
+# proportion of cpgs that have coverage in all samples
+
+index=apply(cov>0,1,all)
+mean(index)
+```
+
+```{r}
+
+tot = rowSums(cov)
+
+hist(tot)
+
+#there are some very large values
+
+tot |> 
+  log10() |> 
+  hist()
+
+loc= start(colonCancerWGBS)
+
+##plot the coverage by pieces
+
+for(i in 1:11){
+  index=1:100000+100000*i ##very ad-hoc
+  plot(loc[index],tot[index],cex=.5,ylim=c(0,300))
+}
+
+```
+
+```{r}
+# Methylation status
+meth_status <- m/cov
+meth_status |> tail()
+
+# Standard error of this estimate
+1/sqrt(cov) |> 
+  tail()
+```
+
+# Data Analysis
+
+First we need to smooth the data:
+
+```{r}
+library(BiocParallel)
+
+bs_fit <- BSmooth(BSseq = colonCancerWGBS, BPPARAM = BiocParallel::MulticoreParam(workers = 8), verbose = T)
+```
+
+```{r}
+
+# Average coverage of CpGs 
+round(colMeans(getCoverage(bs_fit)), 1)
+
+# Number of CpGs
+length(bs_fit)
+
+## Number of CpGs which are covered by at least 1 read in all 6 samples
+sum(rowSums(cov >= 1) == 6)
+
+## Number of CpGs with 0 coverage in all samples
+sum(rowSums(cov) == 0) 
+
+# this happens due to the rmZeroCov = TRUE parameter inside the function read.bismark()
+
+```
+
+# Filtering loci
+
+There isn't a manual for this task.
+
+```{r}
+
+keep_loci <- which(rowSums(cov[, bs_fit$title == "Colon_Tumor_Primary"] >= 2) >= 2 &
+                     rowSums(cov[, bs_fit$title == "Colon_Primary_Normal"] >= 2) >= 2)
+
+keep_loci |> length()
+```
+
+```{r}
+bs_fit <- bs_fit[keep_loci,]
+bs_fit
+```
+
+# Compute t-statistics
+
+```{r}
+bs_tstat <- BSmooth.tstat(BSseq = bs_fit, group1 = c("SRR949210","SRR949211","SRR949212"), group2 = c("SRR949213","SRR949214","SRR949215"), estimate.var = "group2", local.correct = T, verbose = T)
+```
+
+```{r}
+plot(bs_tstat)
+```
+
+# Finding DMR's
+
+```{r}
+
+dmrs0 <- dmrFinder(bs_tstat, cutoff = c(-4.6, 4.6))
+
+dmrs <- subset(dmrs0, n >= 3 & abs(meanDiff) >= 0.1)
+nrow(dmrs)
+
+```
+
+```{r}
+
+#| label: fig-dmr
+
+df <- pData(bs_fit)
+df$col <- rep(c("red", "blue"), each=3)
+
+pData(bs_fit) <- df
+
+plotRegion(bs_fit, dmrs[1,], extend = 10000, addRegions = dmrs)
+
+```
+
+# Other type of plots
+
+```{r}
+library(Gviz)
+
+genome <- "hg19"
+
+dmr <- dmrs[1,]
+chrom <- paste0("chr",dmr$chr)
+start <- dmr$start
+end <- dmr$end
+
+minbase <- start - 0.05 * (end - start)
+maxbase <- end + 0.05 * (end - start)
+
+pal <- c("#377EB8","#E41A1C")
+
+iTrack <- IdeogramTrack(genome = genome, chromosome = chrom, name = chrom)
+gTrack <- GenomeAxisTrack(col="black", cex=1, name = "", fontcolor="black")
+
+rTrack <- UcscTrack(genome = genome, 
+                    chromosome = chrom, 
+                    track = "NCBI RefSeq",
+                    from = 44.9e6,to = 45.2e6, 
+                    trackType = "GeneRegionTrack",
+                    rstarts = "exonStarts", 
+                    rends = "exonEnds", 
+                    gene = "name",
+                    symbol = "name2", 
+                    transcript = "name",
+                    strand = "strand",
+                    fill = "darkblue",
+                    stacking = "squish", 
+                    name = "RefSeq",
+                    showId = TRUE, 
+                    geneSymbol = TRUE)
+
+gr <- makeGRangesFromDataFrame(dmrs)
+
+meth <- m/cov
+index <- rownames(dmrs) |> as.numeric()
+meth <- meth[index,]
+
+seqlevelsStyle(gr) <- "UCSC"
+
+index_1 <- which(targets$Run %in% c("SRR949210","SRR949211","SRR949212"))
+index_2 <- which(targets$Run %in% c("SRR949213","SRR949214","SRR949215"))
+
+targets$title[index_1] <- paste(targets$title[index_1],1:3, sep = ".")
+targets$title[index_2] <- paste(targets$title[index_2],1:3, sep = ".")
+
+a <- meth |> 
+    as.data.frame()
+
+names(a) <- targets$title
+# index <- order(targets$Status)
+# a <- a[,index]
+
+a <- a |> dplyr::mutate_all(function(x){
+    ifelse(is.nan(x),0,x)
+})
+
+for(i in 1:length(targets$title)){
+    
+    n <- colnames(a)[i]
+    mcols(gr)[,n] <- a[,i]
+    
+}
+
+# gr$beta <- getBeta(dat$object)
+
+# mcols(gr) <- mcols(gr)[,4:37]
+
+methTrack <- DataTrack(range = gr,
+                       genome = genome,
+                       chromosome = chrom, 
+                       ylim = c(-0.05, 1.05),
+                       col = pal,
+                       type = c("a","p"), 
+                       name = "DNA Meth.\n(beta value)",
+                       background.panel = "white", 
+                       legend = TRUE, 
+                       cex.title = 0.8,
+                       cex.axis = 0.8, 
+                       cex.legend = 0.8)
+
+dmrTrack <- AnnotationTrack(start = start, 
+                            end = end, 
+                            genome = genome, 
+                            name = "DMR - Multi-resolution",
+                            chromosom = chrom)
+
+tracks <- list(iTrack, gTrack, methTrack, dmrTrack, rTrack)
+sizes <- c(2, 2, 5, 2, 3) # set up the relative sizes of the tracks
+
+```
+
+```{r}
+png(file="track_methyl_seq_plot.png", width = 1200, height = 550)
+
+plotTracks(list(iTrack,gTrack, methTrack, dmrTrack, rTrack),add53=T, add35=T,grid=T,sizes=sizes,groups = rep(c("Colon_Tumor_Primary","Colon_Primary_Normal"), each=3),from = 44.9e6,to = 45.2e6)
+
+dev.off()
+```

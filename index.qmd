@@ -1,111 +1,82 @@
 ---
-title: La Palma Earthquakes
+title: Analysis of Methylated DNA
 author:
-  - name: Steve Purves
-    orcid: 0000-0002-0760-5497
+  - name: Piero Palacios Bernuy
+    orcid: 0000-0001-6729-4080
     corresponding: true
-    email: steve@curvenote.com
+    email: p.palacios.bernuy@gmail.com
     roles:
       - Investigation
-      - Project administration
-      - Software
+      - Bioinformatics
+      - Deep learning
       - Visualization
-    affiliations:
-      - Curvenote
-  - name: Rowan Cockett
-    orcid: 0000-0002-7859-8394
-    corresponding: false
-    roles: []
-    affiliations:
-      - Curvenote
+    
 keywords:
-  - La Palma
-  - Earthquakes
+  - 450k array
+  - methylation
+  - CpG
+  - CpGs islands
 abstract: |
-  In September 2021, a significant jump in seismic activity on the island of La Palma (Canary Islands, Spain) signaled the start of a volcanic crisis that still continues at the time of writing. Earthquake data is continually collected and published by the Instituto Geográphico Nacional (IGN). ...
+  This document is part of a series of the analysis of Omics data. Especifycally, here is showed how to analyze Illumina 450k array and Methyl-Seq data with Bioconductor packages. Also, it's showcased how to make plots of the methylation data in the context of genomic positions and genes strutctures. 
 plain-language-summary: |
-  Earthquake data for the island of La Palma from the September 2021 eruption is found ...
+  This document have examples of the analysis of Illumina 450k array and Methyl-Seq data.
 key-points:
-  - A web scraping script was developed to pull data from the Instituto Geogràphico Nacional into a machine-readable form for analysis
-  - Earthquake events on La Palma are consistent with the presence of both mantle and crustal reservoirs.
+  - A guide to analyze Methyl-Seq data.
+  - A guide to analyze Illumina 450k array data.
 date: last-modified
 bibliography: references.bib
 citation:
-  container-title: Earth and Space Science
+  container-title: An open source portfolio
 number-sections: true
 ---
 
-## Introduction
+## Methylation analysis
 
-```{r}
-eruptions <- c(1492, 1585, 1646, 1677, 1712, 1949, 1971, 2021)
-n_eruptions <- length(eruptions)
-```
+### Methylation
 
-```{r}
-#| label: fig-timeline
-#| fig-cap: Timeline of recent earthquakes on La Palma
-#| fig-alt: An event plot of the years of the last 8 eruptions on La Palma.
-#| fig-height: 1.5
-#| fig-width: 6
-par(mar = c(3, 1, 1, 1) + 0.1)
-plot(eruptions, rep(0, n_eruptions), 
-  pch = "|", axes = FALSE)
-axis(1)
-box()
-```
+Epigenetics is the study of how your behaviors and environment can cause changes that affect the way your genes work. Unlike genetic changes, epigenetic changes are reversible and do not change your DNA sequence, but they can change how your body reads a DNA sequence (CDC,2024).
 
-```{r}
-#| output: false
-avg_years_between_eruptions <- mean(diff(eruptions[-n_eruptions]))
-avg_years_between_eruptions
-```
+Talking about the genes, these can only be expressed when the chromatin is in it's relaxed form (euchromatin) and reversely, these cannot be expressed in it's compacted form (hetero-chromatin). Methylation of cytosine's control part of this process of the chromatin and it's really important to understand is a gene (or the surroundings) is methylated.
 
-Based on data up to and including 1971, eruptions on La Palma happen every `r round(avg_years_between_eruptions, 1)` years on average.
+![DNA Methylation](https://static.cambridge.org/binary/version/id/urn:cambridge.org:id:binary:20220108070724404-0024:S0924270821000181:S0924270821000181_fig3.png?pub-status=live){width="447"}
 
-Studies of the magma systems feeding the volcano, such as @marrero2019, have proposed that there are two main magma reservoirs feeding the Cumbre Vieja volcano; one in the mantle (30-40km depth) which charges and in turn feeds a shallower crustal reservoir (10-20km depth).
+### CpG's
 
-Eight eruptions have been recorded since the late 1400s (@fig-timeline).
+The cytosine's (C) that are methylated are followed by a guanine (G). This pattern is called CpG in the context of epigenetics. These CpG's tend to cluster into groups (CpG islands) and, these Cpg islands tend to be close to the promoter region of the genes.
 
-Data and methods are discussed in @sec-data-methods.
+### Bisulfite treatment
 
-Let $x$ denote the number of eruptions in a year. Then, $x$ can be modeled by a Poisson distribution
+![Bisulfite Treatment](https://www.diagenode.com/img/categories/bisulfite-conversion/bisulfite.png)
 
-$$
-p(x) = \frac{e^{-\lambda} \lambda^{x}}{x !}
-$$ {#eq-poisson}
+If a C is methylated the bisulfite treatment won´t change the cytosine but, if the C is not methylated, the C will suffer a transition to a T.
 
-where $\lambda$ is the rate of eruptions per year. Using @eq-poisson, the probability of an eruption in the next $t$ years can be calculated.
+### Methylation 450k array
 
-| Name                 | Year   |
-| -------------------- | ------ |
-| Current              | 2021   |
-| Teneguía             | 1971   |
-| Nambroque            | 1949   |
-| El Charco            | 1712   |
-| Volcán San Antonio   | 1677   |
-| Volcán San Martin    | 1646   |
-| Tajuya near El Paso  | 1585   |
-| Montaña Quemada      | 1492   |
+To see how to analyze from a Illumina 450k array with the [@minfi] package, click to the script below the image.
 
-: Recent historic eruptions on La Palma {#tbl-history}
+{{< embed notebooks/Methylation_analysis.qmd#fig-meth >}}
 
-@tbl-history summarises the eruptions recorded since the colonization of the islands by Europeans in the late 1400s.
+### Methylation 450k array - Multi-resolution Analysis
 
-![Map of La Palma](images/la-palma-map.png){#fig-map}
+To see how to analyze at a multi-resolution level from a Illumina 450k array with the [@minfi] package, click to the script below the table.
 
-La Palma is one of the west most islands in the Volcanic Archipelago of the Canary Islands (@fig-map). 
+![Methylation DMR](notebooks/track_plot.png)
 
-{{< embed notebooks/explore-earthquakes.qmd#fig-spatial-plot >}}
+{{< embed notebooks/Methylation_multiresolution_analysis.qmd#Island-status echo=true >}}
 
-@fig-spatial-plot shows the location of recent Earthquakes on La Palma.
+## Methyl-Seq
 
-## Data & Methods {#sec-data-methods}
+Analyzing bisulfite sequencing data requires a server or an HPC. U can use the *methylseq* pipeline from [nfcore](https://nf-co.re/methylseq/2.6.0) to get the .cov files to proced with the downstream analysis on R.
 
-## Conclusion
+To see how to analyze Whole-genome bisulfite sequencing (WGBS) with the [@bsseq], click on the script below the image.
+
+### WGBS
+
+![Methylation DMR](notebooks/track_methyl_seq_plot.png) 
+
+{{< embed notebooks/Methyl_Seq.qmd#fig-dmr >}}
 
 ## References {.unnumbered}
 
-:::{#refs}
-
+::: {#refs}
 :::

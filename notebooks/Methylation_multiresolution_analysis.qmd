@@ -1,0 +1,199 @@
+---
+title: "DNA methylation measurement"
+subtitle: "Multi-resolution analysis"
+author: "Piero Palacios Bernuy"
+format: html
+editor: visual
+---
+
+## Loading data
+
+```{r}
+library(minfi)
+library(IlluminaHumanMethylation450kmanifest)
+library(IlluminaHumanMethylation450kanno.ilmn12.hg19)
+library(tidyverse)
+library(TxDb.Hsapiens.UCSC.hg19.knownGene)
+library(Gviz)
+```
+
+``` r
+# This code is not executed due to limit size (50 mb) of github
+# Please load the 450karrar_processed.rds data that is the resulto of this code
+# If you want to do this with the original data, you can find this data on: 
+# https://github.com/genomicsclass/tcgaMethylationSubset
+
+targets <- read.csv("targets.txt", sep = "\t")
+
+targets$Basename <- paste0(getwd(),"/notebooks/", targets$Basename)
+
+dat <- read.metharray(targets$Basename, verbose = T)
+
+pData(dat) <- as(targets, "DataFrame")
+
+## preprocessing
+
+dat <- preprocessIllumina(dat)
+dat <- mapToGenome(dat)
+
+## Here we are collaping CpGs for a zxoom_out view of the methylated sites
+dat <- cpgCollapse(dat))
+```
+
+## Multi-resolution analysis
+
+```{r}
+
+dat <- readRDS(file = "450karray_processed_multiresolution2.rds")
+
+targets <- pData(dat$object)
+
+```
+
+```{r}
+
+#| label: Island-status
+
+mcols(granges(dat$object))$type |> 
+    table() |> 
+    prop.table() |> 
+    as.data.frame() |> 
+    dplyr::rename("Island Status" = Var1) |> 
+    gt::gt()
+
+```
+
+```{r}
+
+cancer_status <- factor(pData(dat$object)$Status,
+                        levels = c("normal","cancer"))
+
+X <- model.matrix(~cancer_status)
+
+res <- blockFinder(dat$object,X,cutoff = 0.05)
+
+```
+
+```{r}
+tab=makeGRangesFromDataFrame(res$table, keep.extra.columns = T)
+index= granges(dat$obj)%over% (tab[1]+10000)
+pos=start(dat$obj)[index]
+col=as.numeric(cancer_status)
+matplot(pos,getBeta(dat$obj)[index,],col=col,pch=1,cex=0.5)
+##and these are the estimated difference
+plot(pos,res$fitted[index])
+```
+
+## Plotting
+
+```{r}
+
+
+genome <- "hg19"
+
+dmr <- res$table[2,]
+chrom <- dmr$chr
+start <- dmr$start
+end <- dmr$end
+
+minbase <- start
+maxbase <- end
+
+pal <- c("#E41A1C", "#377EB8")
+
+iTrack <- IdeogramTrack(genome = genome, chromosome = dmr$chr, name = dmr$chr)
+gTrack <- GenomeAxisTrack(col="black", cex=1, name = "", fontcolor="black")
+
+# rTrack <- UcscTrack(genome = genome, 
+#                     chromosome = chrom, 
+#                     track = "NCBI RefSeq",
+#                     from = minbase,
+#                     to = maxbase, 
+#                     trackType = "GeneRegionTrack",
+#                     rstarts = "exonStarts", 
+#                     rends = "exonEnds", 
+#                     gene = "name",
+#                     symbol = "name2", 
+#                     transcript = "name",
+#                     strand = "strand",
+#                     fill = "darkblue",
+#                     stacking = "squish", 
+#                     name = "RefSeq",
+#                     showId = TRUE, 
+#                     geneSymbol = TRUE)
+
+gr <- granges(dat$object)
+
+index_1 <- which(targets$Status == "normal")
+index_2 <- which(targets$Status == "cancer")
+
+targets$Status[index_1] <- paste(targets$Status[index_1],1:17, sep = ".")
+targets$Status[index_2] <- paste(targets$Status[index_2],1:17, sep = ".")
+
+a <- getBeta(dat$object) |> 
+    as.data.frame()
+
+names(a) <- targets$Status
+index <- order(targets$Status)
+a <- a[,index]
+
+for(i in 1:length(targets$Status)){
+    
+    n <- colnames(a)[i]
+    mcols(gr)[,n] <- a[,i]
+    
+}
+
+# gr$beta <- getBeta(dat$object)
+
+mcols(gr) <- mcols(gr)[,4:37]
+
+methTrack <- DataTrack(range = gr,
+                       genome = genome,
+                       chromosome = chrom, 
+                       ylim = c(-0.05, 1.05),
+                       col = pal,
+                       type = c("a"), 
+                       name = "DNA Meth.\n(beta value)",
+                       background.panel = "white", 
+                       legend = TRUE, 
+                       cex.title = 0.8,
+                       cex.axis = 0.8, 
+                       cex.legend = 0.8)
+
+dmrTrack <- AnnotationTrack(start = start, 
+                            end = end, 
+                            genome = genome, 
+                            name = "DMR - Multi-resolution",
+                            chromosom = chrom)
+
+txTr <- GeneRegionTrack(TxDb.Hsapiens.UCSC.hg19.knownGene, chromosome = chrom,name="Longest transcript")
+
+tracks <- list(iTrack, gTrack, methTrack, dmrTrack, txTr)
+sizes <- c(2, 2, 5, 2, 1) # set up the relative sizes of the tracks
+
+
+
+
+```
+
+```{r}
+
+png(file="track_plot.png", width = 1200, height = 550)
+plotTracks(tracks, 
+           from = minbase, 
+           to = maxbase, 
+           showTitle = TRUE, 
+           add53 = TRUE,
+           add35 = TRUE, 
+           grid = TRUE, 
+           lty.grid = 3, 
+           sizes = sizes,
+           groups = rep(c("cancer","normal"), each=17),
+           length(tracks),
+           shape="arrow",collapseTranscripts = "longest")
+
+dev.off()
+
+
+```
