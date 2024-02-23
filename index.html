@@ -80,7 +80,7 @@ div.csl-indent {
 }</style>
 
 
-<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="site_libs/clipboard/clipboard.min.js"></script>
 <script src="site_libs/quarto-html/quarto.js"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
@@ -100,6 +100,9 @@ div.csl-indent {
     document.body.classList.add('hypothesis-enabled');
   });
 </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
 
 
 <meta name="citation_title" content="Analysis of Methylated DNA">
@@ -227,7 +230,7 @@ div.csl-indent {
 <div class="quarto-embed-nb-cell">
 <div id="cell-fig-meth" class="cell">
 <div class="cell-output cell-output-display">
-<div id="fig-meth" class="quarto-figure quarto-figure-center quarto-float anchored" height="480" width="672">
+<div id="fig-meth" class="quarto-figure quarto-figure-center quarto-float anchored" width="672" height="480">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-meth-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <a href="index_files/figure-html/notebooks-Methylation_analysis-fig-meth-output-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-3" data-glightbox="description: .lightbox-desc-3"><img src="index_files/figure-html/notebooks-Methylation_analysis-fig-meth-output-1.png" id="fig-meth" width="672" height="480" class="figure-img"></a>
@@ -288,22 +291,12 @@ An Open Source Portfolio. February 23, 2024.
 <p>To see how to analyze Whole-genome bisulfite sequencing (WGBS) with the <span class="citation" data-cites="bsseq">(<a href="#ref-bsseq" role="doc-biblioref">Hansen, Langmead, and Irizarry 2012</a>)</span>, click on the script below the image.</p>
 <section id="wgbs" class="level4" data-number="1.6.1">
 <h4 data-number="1.6.1" data-anchor-id="wgbs"><span class="header-section-number">1.6.1</span> WGBS</h4>
-<div class="quarto-embed-nb-cell">
-<div id="cell-fig-dmr" class="cell">
-<div class="cell-output cell-output-display">
-<div id="fig-dmr" class="quarto-figure quarto-figure-center quarto-float" height="480" width="672">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-dmr-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="index_files/figure-html/notebooks-Methyl_Seq-fig-dmr-output-1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-5" data-glightbox="description: .lightbox-desc-5"><img src="index_files/figure-html/notebooks-Methyl_Seq-fig-dmr-output-1.png" id="fig-dmr" width="672" height="480" class="figure-img"></a>
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig quarto-uncaptioned" id="fig-dmr-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;2
-</figcaption>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="notebooks/track_methyl_seq_plot.png" class="lightbox" data-gallery="quarto-lightbox-gallery-5" data-glightbox="description: .lightbox-desc-5" title="Methylation DMR"><img src="notebooks/track_methyl_seq_plot.png" class="img-fluid figure-img" width="523" alt="Methylation DMR"></a></p>
+<figcaption>Methylation DMR</figcaption>
 </figure>
 </div>
-</div>
-</div>
-<a class="quarto-notebook-link" id="nblink-3" href="notebooks/Methyl_Seq-preview.html#cell-fig-dmr">Source: DNA methylation measurement by sequencing</a></div>
 </section>
 </section>
 
@@ -322,7 +315,7 @@ Hansen, Kasper D., Benjamin Langmead, and Rafael A. Irizarry. 2012. <span>“<sp
 <span class="glightbox-desc lightbox-desc-2">Bisulfite Treatment</span>
 <span class="glightbox-desc lightbox-desc-3">Figure&nbsp;1: </span>
 <span class="glightbox-desc lightbox-desc-4">Methylation DMR</span>
-<span class="glightbox-desc lightbox-desc-5">Figure&nbsp;2: </span>
+<span class="glightbox-desc lightbox-desc-5">Methylation DMR</span>
 </div>
 </section>
 
@@ -716,7 +709,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 });
 </script>
  <!-- /content -->
-<script>var lightboxQuarto = GLightbox({"selector":".lightbox","loop":false,"closeEffect":"zoom","descPosition":"bottom","openEffect":"zoom"});
+<script>var lightboxQuarto = GLightbox({"openEffect":"zoom","loop":false,"selector":".lightbox","closeEffect":"zoom","descPosition":"bottom"});
 window.onload = () => {
   lightboxQuarto.on('slide_before_load', (data) => {
     const { slideIndex, slideNode, slideConfig, player, trigger } = data;
