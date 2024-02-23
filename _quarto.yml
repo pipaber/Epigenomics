@@ -8,8 +8,4 @@ format:
   html:
     toc: true
     comments:
-<<<<<<< HEAD
       hypothesis: true
-=======
-      hypothesis: true
->>>>>>> 977ef03d810c9086a79661f8085a3d9c3b14faa2
